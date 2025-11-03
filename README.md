@@ -1,6 +1,6 @@
 # sreader: A TUI Atom and RSS Feed Reader
 
-[![Build Status](https://github.com/bmoneill/sreader/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/bmoneill/sreader/actions/workflows/go.yml).
+[![CI Status](https://github.com/bmoneill/sreader/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/bmoneill/sreader/actions/workflows/go.yml).
 [![Dependabot Active](https://img.shields.io/badge/dependabot-active-brightgreen?style=flat-square&logo=dependabot)](https://github.com/bmoneill/sreader/security/dependabot)
 
 ## Installation
