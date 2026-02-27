@@ -49,11 +49,25 @@ type model struct {
 	height    int
 }
 
+type syncDoneMsg struct {
+	feeds []*feed.Feed
+	err   error
+}
+
 // Handles user input and updates the model accordingly
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
+	case syncDoneMsg:
+		m.feeds = msg.feeds
+		// Update current visible list based on current view
+		switch m.view {
+		case feedListView:
+			m.updateFeedList()
+		case entryListView:
+			m.updateEntryList()
+		}
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
 		m.feedList.SetSize(msg.Width, msg.Height)
@@ -110,15 +124,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 		case config.Config.SyncKey:
-			feed.Sync()
-			m.feeds = feed.GetFeeds()
-			switch m.view {
-			case feedListView:
-				m.updateFeedList()
-			case entryListView:
-				m.updateEntryList()
+			return m, func() tea.Msg {
+				feed.Sync()
+				return syncDoneMsg{feeds: feed.GetFeeds(), err: nil}
 			}
-			return m, nil
 		case config.Config.BrowserKey:
 			if m.view == entryListView || m.view == entryView {
 				link := m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].URL
