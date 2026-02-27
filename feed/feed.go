@@ -97,6 +97,12 @@ func formatHTMLString(s string) string {
 	return string(ascii)
 }
 
+// Generate temporary filename for a given URL
+func getTmpFilename(url string) string {
+	urlsum := sha1.Sum([]byte(url))
+	return config.Config.TmpDir + "/" + hex.EncodeToString(urlsum[:]) + ".tmp"
+}
+
 // Called by loadRSSFeeds. Parse feed from temporary file grabbed by syncWorkers and remove the file.
 func loadRSSFeed(url string) *gofeed.Feed {
 	filename := getTmpFilename(url)
@@ -197,9 +203,4 @@ func syncWorker(url string, modTime string, wg *sync.WaitGroup, ctx context.Cont
 	default:
 		return
 	}
-}
-
-func getTmpFilename(url string) string {
-	urlsum := sha1.Sum([]byte(url))
-	return config.Config.TmpDir + "/" + hex.EncodeToString(urlsum[:]) + ".tmp"
 }

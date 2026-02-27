@@ -31,46 +31,27 @@ type Feed struct {
 
 var conn *sql.DB
 
-// Initialize SQLite database connection and creates the necessary tables if they do not exist.
-func InitDB() {
-	log.Println("Loading database...")
-	// Initialize the SQLite database connection
-	var err error
-	conn, err = sql.Open("sqlite3", config.Config.DBFile)
+// Adds an entry to the database if it does not already exist.
+func AddEntry(feedID int64, url, title, description string, datePublished string) error {
+	// Check if the entry already exists (by feed_id and date_published)
+	var exists bool
+	err := conn.QueryRow("SELECT EXISTS(SELECT 1 FROM entries WHERE feed_id = ? AND date_published = ?)", feedID, datePublished).Scan(&exists)
 	if err != nil {
-		log.Fatalln("Failed to load database.", err.Error())
+		return err
+	}
+	if exists {
+		return nil // Entry already exists, do nothing
 	}
 
-	// Create the tables if they do not exist
-	_, err = conn.Exec(`CREATE TABLE IF NOT EXISTS feeds (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		url TEXT,
-		title TEXT,
-		description TEXT,
-		last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
-	)`)
-
+	// Insert new entry into the database
+	stmt, err := conn.Prepare("INSERT INTO entries (feed_id, url, title, description, date_published) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
-		log.Fatalln("Error creating feeds table:", err.Error())
+		return err
 	}
+	defer stmt.Close()
 
-	_, err = conn.Exec(`CREATE TABLE IF NOT EXISTS entries (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		feed_id INTEGER,
-		url TEXT,
-		title TEXT NOT NULL DEFAULT '',
-		description TEXT NOT NULL DEFAULT '',
-		content TEXT NOT NULL DEFAULT '',
-		date_published DATETIME,
-		read INTEGER DEFAULT 0,
-		FOREIGN KEY(feed_id) REFERENCES feeds(id)
-	)`)
-
-	if err != nil {
-		log.Fatalln("Error creating entries table:", err.Error())
-	}
-
-	log.Println("Database loaded successfully.")
+	_, err = stmt.Exec(feedID, url, title, description, datePublished)
+	return err
 }
 
 // Adds a feed to the database.
@@ -133,29 +114,6 @@ func AddFeed(feed *gofeed.Feed) (int64, error) {
 
 	log.Println(feed.Title, "added/updated successfully,", len(feed.Items), "entries.")
 	return id, err
-}
-
-// Adds an entry to the database if it does not already exist.
-func AddEntry(feedID int64, url, title, description string, datePublished string) error {
-	// Check if the entry already exists (by feed_id and date_published)
-	var exists bool
-	err := conn.QueryRow("SELECT EXISTS(SELECT 1 FROM entries WHERE feed_id = ? AND date_published = ?)", feedID, datePublished).Scan(&exists)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return nil // Entry already exists, do nothing
-	}
-
-	// Insert new entry into the database
-	stmt, err := conn.Prepare("INSERT INTO entries (feed_id, url, title, description, date_published) VALUES (?, ?, ?, ?, ?)")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(feedID, url, title, description, datePublished)
-	return err
 }
 
 // Get all entries for feed with feedID
@@ -245,6 +203,48 @@ func GetFeeds() []*Feed {
 	}
 
 	return feeds
+}
+
+// Initialize SQLite database connection and creates the necessary tables if they do not exist.
+func InitDB() {
+	log.Println("Loading database...")
+	// Initialize the SQLite database connection
+	var err error
+	conn, err = sql.Open("sqlite3", config.Config.DBFile)
+	if err != nil {
+		log.Fatalln("Failed to load database.", err.Error())
+	}
+
+	// Create the tables if they do not exist
+	_, err = conn.Exec(`CREATE TABLE IF NOT EXISTS feeds (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		url TEXT,
+		title TEXT,
+		description TEXT,
+		last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+	)`)
+
+	if err != nil {
+		log.Fatalln("Error creating feeds table:", err.Error())
+	}
+
+	_, err = conn.Exec(`CREATE TABLE IF NOT EXISTS entries (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		feed_id INTEGER,
+		url TEXT,
+		title TEXT NOT NULL DEFAULT '',
+		description TEXT NOT NULL DEFAULT '',
+		content TEXT NOT NULL DEFAULT '',
+		date_published DATETIME,
+		read INTEGER DEFAULT 0,
+		FOREIGN KEY(feed_id) REFERENCES feeds(id)
+	)`)
+
+	if err != nil {
+		log.Fatalln("Error creating entries table:", err.Error())
+	}
+
+	log.Println("Database loaded successfully.")
 }
 
 // Mark an entry as read
