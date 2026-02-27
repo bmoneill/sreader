@@ -242,9 +242,11 @@ func Init(feeds []*feed.Feed) *tea.Program {
 	m.feedList.SetDelegate(listDelegate)
 	m.feedList.SetShowTitle(true)
 	m.feedList.SetShowFilter(true)
+	setKeyBinds(&m.feedList)
 	m.entryList.SetDelegate(listDelegate)
 	m.entryList.SetShowTitle(true)
 	m.entryList.SetShowFilter(true)
+	setKeyBinds(&m.entryList)
 
 	appStyle = lipgloss.NewStyle().
 		Foreground(fg).
@@ -332,6 +334,17 @@ func newModel(feeds []*feed.Feed, width, height int) model {
 	}
 }
 
+func setKeyBinds(l *list.Model) {
+	// Unused binds
+	l.KeyMap.NextPage.Unbind()
+	l.KeyMap.PrevPage.Unbind()
+
+	l.KeyMap.CursorDown.SetKeys(config.Config.DownKey)
+	l.KeyMap.CursorUp.SetKeys(config.Config.UpKey)
+	l.KeyMap.GoToStart.SetKeys(config.Config.TopKey)
+	l.KeyMap.GoToEnd.SetKeys(config.Config.BottomKey)
+}
+
 // In entryList, updates the list of entries based on the currently selected feed.
 func (m *model) updateEntryList() {
 	entryItems := []list.Item{}
@@ -379,6 +392,7 @@ func (m *model) updateFeedList() {
 			link:  f.URL,
 		})
 	}
+
 	m.feedList.SetItems(feedItems)
 	m.feedList.SetDelegate(listDelegate)
 	m.feedList.Select(0)

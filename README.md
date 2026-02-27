@@ -23,10 +23,10 @@ sreader [-c configfile] [-s]
 
 ## Features
 
-- [X] Clean, intuitive TUI interface
-- [X] Open entries in browser or media player
-- [X] Vim key bindings
-- [X] [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/) compliant
+- [x] Clean, intuitive TUI interface
+- [x] Open entries in browser or media player
+- [x] Vim key bindings
+- [x] [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/) compliant
 
 ## Keybindings
 
@@ -36,6 +36,8 @@ sreader uses Vim-like keybindings by default.
 - `j`: Select next item
 - `k`: Select previous item
 - `l`: Open selected item
+- `g`: Jump to start of list
+- `G`: Jump to end of list
 - `/`: Filter list items
 - `o`: Open selected list entry in web browser
 - `v`: Open selected list entry in video player

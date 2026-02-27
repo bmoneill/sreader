@@ -32,6 +32,8 @@ type SreaderConfig struct {
 	DownKey    string
 	LeftKey    string
 	RightKey   string
+	BottomKey  string
+	TopKey     string
 	QuitKey    string
 	SyncKey    string
 	BrowserKey string
@@ -67,6 +69,8 @@ const (
 	defaultDownKey    string = "j"
 	defaultLeftKey    string = "h"
 	defaultRightKey   string = "l"
+	defaultBottomKey  string = "G"
+	defaultTopKey     string = "g"
 	defaultQuitKey    string = "q"
 	defaultSyncKey    string = "r"
 	defaultBrowserKey string = "o"
