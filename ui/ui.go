@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 
 	html2markdown "github.com/JohannesKaufmann/html-to-markdown/v2"
 	"github.com/bmoneill/sreader/config"
@@ -32,6 +33,7 @@ type feedItem struct {
 	title string
 	desc  string
 	link  string
+	date  string
 }
 
 func (f feedItem) Title() string       { return f.title }
@@ -337,6 +339,7 @@ func (m *model) updateEntryList() {
 			entryItems = append(entryItems, feedItem{
 				title: item.Title,
 				link:  item.URL,
+				desc:  htmlTruncate(item.Description, m.width-2),
 			})
 		}
 	}
@@ -350,6 +353,7 @@ func (m *model) updateEntryList() {
 func (m *model) updateEntryView() {
 	if m.currFeed < len(m.feeds) && m.currEntry < len(m.feeds[m.currFeed].Entries) {
 		// Set the content to the selected entry's content
+		log.Println(m.feeds[m.currFeed].Entries[m.currEntry].DatePublished)
 		content := "\nDate: " + m.feeds[m.currFeed].Entries[m.currEntry].DatePublished
 		content += "\nLink: " + m.feeds[m.currFeed].Entries[m.currEntry].URL
 		content += "\n\n" + htmlTruncate(m.feeds[m.currFeed].Entries[m.currEntry].Description, m.width-2)

@@ -3,6 +3,8 @@ package feed
 import (
 	"database/sql"
 	"log"
+	"sort"
+	"time"
 
 	"github.com/bmoneill/sreader/config"
 	_ "github.com/mattn/go-sqlite3"
@@ -105,7 +107,7 @@ func AddFeed(feed *gofeed.Feed) (int64, error) {
 
 	// Add entries
 	for _, item := range feed.Items {
-		err = AddEntry(id, item.Link, item.Title, item.Description, item.PublishedParsed.UTC().Format("Tue, 15 Nov 1994 12:45:26 GMT"))
+		err = AddEntry(id, item.Link, item.Title, item.Description, item.PublishedParsed.Format(time.RFC822))
 		if err != nil {
 			log.Println("Error adding entry:", err.Error())
 			return 0, err
@@ -158,6 +160,14 @@ func GetEntries(feedID int) []*Entry {
 		entries = append(entries, entry)
 	}
 
+	sort.Slice(entries, func(i, j int) bool {
+		time1, err := time.Parse(time.RFC822, entries[i].DatePublished)
+		time2, err2 := time.Parse(time.RFC822, entries[j].DatePublished)
+		if err != nil || err2 != nil {
+			return false
+		}
+		return time1.After(time2)
+	})
 	return entries
 }
 
@@ -202,6 +212,9 @@ func GetFeeds() []*Feed {
 		}
 	}
 
+	sort.Slice(feeds, func(i, j int) bool {
+		return feeds[i].LastUpdated > feeds[j].LastUpdated
+	})
 	return feeds
 }
 
@@ -235,7 +248,7 @@ func InitDB() {
 		title TEXT NOT NULL DEFAULT '',
 		description TEXT NOT NULL DEFAULT '',
 		content TEXT NOT NULL DEFAULT '',
-		date_published DATETIME,
+		date_published TEXT NOT NULL DEFAULT '',
 		read INTEGER DEFAULT 0,
 		FOREIGN KEY(feed_id) REFERENCES feeds(id)
 	)`)
