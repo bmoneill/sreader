@@ -326,18 +326,28 @@ func newModel(feeds []*feed.Feed, width, height int) model {
 // In entryList, updates the list of entries based on the currently selected feed.
 func (m *model) updateEntryList() {
 	entryItems := []list.Item{}
-	if m.entryList.Cursor() < len(m.feeds) {
-		for _, item := range m.feeds[m.entryList.Cursor()].Entries {
-			entryItems = append(entryItems, feedItem{
-				title: item.Title,
-				link:  item.URL,
-				desc:  htmlTruncate(item.Description, m.width-2),
-			})
-		}
+
+	if len(m.feeds) == 0 {
+		m.entryList.SetItems(entryItems)
+		return
 	}
+	feedIdx := m.feedList.Cursor()
+
+	if feedIdx < 0 || feedIdx >= len(m.feeds) {
+		m.entryList.SetItems(entryItems)
+		return
+	}
+
+	for _, item := range m.feeds[feedIdx].Entries {
+		entryItems = append(entryItems, feedItem{
+			title: item.Title,
+			link:  item.URL,
+			desc:  htmlTruncate(item.Description, m.width-2),
+		})
+	}
+
 	m.entryList.SetItems(entryItems)
 	m.entryList.SetDelegate(listDelegate)
-	m.entryList.ResetSelected()
 }
 
 // In entryView, updates the viewport with the content of the currently selected entry.
