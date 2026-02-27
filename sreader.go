@@ -35,7 +35,7 @@ func main() {
 
 	ui := ui.Init(feeds)
 
-	writer, err := os.Create(config.ExpandHome(config.Config.LogFile))
+	writer, err := os.OpenFile(config.ExpandHome(config.Config.LogFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
 		log.Fatalln("Failed to create log file:", err.Error())
 	}
