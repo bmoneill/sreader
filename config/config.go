@@ -174,8 +174,6 @@ func LoadConfig(path string) {
 	os.MkdirAll(getDirectoryOfFile(Config.DBFile), 0700)
 	os.MkdirAll(getDirectoryOfFile(Config.LogFile), 0700)
 	os.MkdirAll(Config.TmpDir, 0700)
-
-	log.Println("Configuration loaded successfully.")
 }
 
 func WriteDefaultConfig(path string) {
