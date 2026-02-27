@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
 
 	html2markdown "github.com/JohannesKaufmann/html-to-markdown/v2"
 	"github.com/bmoneill/sreader/config"
@@ -46,8 +45,6 @@ type model struct {
 	feedList  list.Model
 	entryList list.Model
 	entry     viewport.Model
-	currFeed  int
-	currEntry int
 	width     int
 	height    int
 }
@@ -77,20 +74,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case feedListView:
 				return m, tea.Quit
 			case entryListView:
+				m.updateFeedList()
 				m.view = feedListView
-				m.currFeed = 0
 			case entryView:
+				m.updateEntryList()
 				m.view = entryListView
-				m.currEntry = 0
 			}
 		case config.Config.RightKey:
 			switch m.view {
 			case feedListView:
-				m.currFeed = m.feedList.Index()
 				m.updateEntryList()
 				m.view = entryListView
 			case entryListView:
-				m.currEntry = m.entryList.Index()
 				m.updateEntryView()
 				m.view = entryView
 			}
@@ -123,17 +118,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case entryListView:
 				m.updateEntryList()
 			}
-			m.updateEntryList()
 			return m, nil
 		case config.Config.BrowserKey:
 			if m.view == entryListView || m.view == entryView {
-				link := m.feeds[m.currFeed].Entries[m.currEntry].URL
+				link := m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].URL
 				feed.OpenInBrowser(link, config.Config.Browser)
 			}
 			return m, nil
 		case config.Config.PlayerKey:
 			if m.view == entryListView || m.view == entryView {
-				link := m.feeds[m.currFeed].Entries[m.currEntry].URL
+				link := m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].URL
 				feed.OpenInPlayer(link, config.Config.Player)
 			}
 			return m, nil
@@ -324,8 +318,6 @@ func newModel(feeds []*feed.Feed, width, height int) model {
 		feedList:  feedList,
 		entryList: entryList,
 		entry:     vp,
-		currFeed:  0,
-		currEntry: 0,
 		width:     width,
 		height:    height,
 	}
@@ -334,8 +326,8 @@ func newModel(feeds []*feed.Feed, width, height int) model {
 // In entryList, updates the list of entries based on the currently selected feed.
 func (m *model) updateEntryList() {
 	entryItems := []list.Item{}
-	if m.currFeed < len(m.feeds) {
-		for _, item := range m.feeds[m.currFeed].Entries {
+	if m.entryList.Cursor() < len(m.feeds) {
+		for _, item := range m.feeds[m.entryList.Cursor()].Entries {
 			entryItems = append(entryItems, feedItem{
 				title: item.Title,
 				link:  item.URL,
@@ -345,22 +337,18 @@ func (m *model) updateEntryList() {
 	}
 	m.entryList.SetItems(entryItems)
 	m.entryList.SetDelegate(listDelegate)
-	m.entryList.Select(0)
-	m.currEntry = 0
+	m.entryList.ResetSelected()
 }
 
 // In entryView, updates the viewport with the content of the currently selected entry.
 func (m *model) updateEntryView() {
-	if m.currFeed < len(m.feeds) && m.currEntry < len(m.feeds[m.currFeed].Entries) {
-		// Set the content to the selected entry's content
-		log.Println(m.feeds[m.currFeed].Entries[m.currEntry].DatePublished)
-		content := "\nDate: " + m.feeds[m.currFeed].Entries[m.currEntry].DatePublished
-		content += "\nLink: " + m.feeds[m.currFeed].Entries[m.currEntry].URL
-		content += "\n\n" + htmlTruncate(m.feeds[m.currFeed].Entries[m.currEntry].Description, m.width-2)
-		content += "\n\n" + htmlTruncate(m.feeds[m.currFeed].Entries[m.currEntry].Content, m.width-2)
-		m.entry.SetContent(content)
-		m.entry.GotoTop()
-	}
+	// Set the content to the selected entry's content
+	content := "\nDate: " + m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].DatePublished
+	content += "\nLink: " + m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].URL
+	content += "\n\n" + htmlTruncate(m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].Description, m.width-2)
+	content += "\n\n" + htmlTruncate(m.feeds[m.feedList.Cursor()].Entries[m.entryList.Cursor()].Content, m.width-2)
+	m.entry.SetContent(content)
+	m.entry.GotoTop()
 }
 
 func (m *model) updateFeedList() {
@@ -375,5 +363,4 @@ func (m *model) updateFeedList() {
 	m.feedList.SetItems(feedItems)
 	m.feedList.SetDelegate(listDelegate)
 	m.feedList.Select(0)
-	m.currFeed = 0
 }
