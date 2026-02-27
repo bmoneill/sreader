@@ -118,6 +118,13 @@ func AddFeed(feed *gofeed.Feed) (int64, error) {
 	return id, err
 }
 
+func CloseDB() {
+	if conn != nil {
+		conn.Close()
+	}
+	log.Println("Closed DB connection.")
+}
+
 // Get all entries for feed with feedID
 func GetEntries(feedID int) []*Entry {
 	// Retrieve entries for a specific feed

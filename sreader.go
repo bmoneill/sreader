@@ -45,4 +45,6 @@ func main() {
 	if _, err := ui.Run(); err != nil {
 		log.Fatalln("Failed to start UI", err.Error())
 	}
+
+	feed.CloseDB()
 }
