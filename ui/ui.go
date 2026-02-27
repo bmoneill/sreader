@@ -261,41 +261,50 @@ func (m model) Init() tea.Cmd {
 
 // Converts HTML to plain text and wraps lines at the specified width.
 func htmlTruncate(content string, width int) string {
-	s, _ := html2markdown.ConvertString(content)
+	md, err := html2markdown.ConvertString(content)
+	if err != nil {
+		return content
+	}
+
+	runes := []rune(md)
 	var result []rune
 	lineLen := 0
 	isLink := false
-	i := 0
-	for i < len(s) {
-		ch := s[i]
-		// Check for start of URL
-		if ch == 'h' && i+3 < len(s) && s[i:i+4] == "http" {
-			isLink = true
+
+	for i := 0; i < len(runes); i++ {
+		ch := runes[i]
+
+		// Very small heuristic to avoid wrapping inside "http..." sequences
+		// Check for start of URL (simple, not exhaustive)
+		if ch == 'h' && i+3 < len(runes) {
+			snippet := string(runes[i : i+4])
+			if snippet == "http" {
+				isLink = true
+			}
 		}
 
-		// Check if end of URL
+		// End of URL heuristics
 		if isLink && (ch == ' ' || ch == '\n' || ch == '\t') {
 			isLink = false
 		}
-		result = append(result, rune(ch))
+
+		result = append(result, ch)
 		if ch == '\n' {
 			lineLen = 0
-		} else {
-			lineLen++
+			continue
 		}
+		lineLen++
+
 		if lineLen >= width && !isLink {
-			// Wrap word if it exceeds width
-			// Find the last space before the width limit
+			// Find a previous space/newline to wrap at
 			for j := len(result) - 1; j >= 0; j-- {
 				if result[j] == ' ' || result[j] == '\n' {
-					// Replace the space with a newline
 					result[j] = '\n'
-					lineLen = len(result) - j - 1 // Reset line length after newline
+					lineLen = len(result) - j - 1
 					break
 				}
 			}
 		}
-		i++
 	}
 	return string(result)
 }
