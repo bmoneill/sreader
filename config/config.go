@@ -109,6 +109,8 @@ var (
 		DownKey:    defaultDownKey,
 		LeftKey:    defaultLeftKey,
 		RightKey:   defaultRightKey,
+		TopKey:     defaultTopKey,
+		BottomKey:  defaultBottomKey,
 		QuitKey:    defaultQuitKey,
 		SyncKey:    defaultSyncKey,
 		BrowserKey: defaultBrowserKey,
