@@ -27,7 +27,6 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to open or create log file:", err.Error())
 	}
-
 	log.SetOutput(writer)
 
 	feed.InitDB()
@@ -35,6 +34,7 @@ func main() {
 	// sync and quit if called with "-s" flag
 	if *syncFlag {
 		feed.Sync()
+		feed.CloseDB()
 		return
 	}
 
