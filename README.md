@@ -1,16 +1,31 @@
-# sreader: A TUI Atom and RSS Feed Reader
+<h1 align="center">
+  sreader
+</h1>
+
+<h4 align="center">
+  A TUI Atom and RSS Feed Reader
+</h4>
 
 [![CI Status](https://github.com/bmoneill/sreader/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/bmoneill/sreader/actions/workflows/go.yml).
 [![Dependabot Active](https://img.shields.io/badge/dependabot-active-brightgreen?style=flat-square&logo=dependabot)](https://github.com/bmoneill/sreader/security/dependabot)
 
-## Installation
+## Table of Contents
 
-### Linux
+- [Features](#features)
+- [Usage](#usage)
+- [Installation](#installation)
+- [Keybindings](#keybindings)
+- [Configuration](#configuration)
+- [Screenshots](#screenshots)
+- [Bugs](#bugs)
+- [License](#license)
 
-```shell
-go install github.com/bmoneill/sreader@latest
-$GOPATH/bin/sreader
-```
+## Features
+
+- [x] Clean, intuitive TUI interface
+- [x] Open entries in browser or media player
+- [x] Vim key bindings
+- [x] [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/) compliant
 
 ## Usage
 
@@ -21,12 +36,14 @@ sreader [-c configfile] [-s]
 - `-c`: Set configuration file
 - `-s`: Sync feeds
 
-## Features
+## Installation
 
-- [x] Clean, intuitive TUI interface
-- [x] Open entries in browser or media player
-- [x] Vim key bindings
-- [x] [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/) compliant
+### Linux
+
+```shell
+go install github.com/bmoneill/sreader@latest
+$GOPATH/bin/sreader
+```
 
 ## Keybindings
 
