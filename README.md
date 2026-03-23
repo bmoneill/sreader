@@ -1,13 +1,13 @@
-<h1 align="center">
-  sreader
-</h1>
-
-<h4 align="center">
-  A TUI Atom and RSS Feed Reader
-</h4>
-
-[![CI Status](https://github.com/bmoneill/sreader/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/bmoneill/sreader/actions/workflows/go.yml).
-[![Dependabot Active](https://img.shields.io/badge/dependabot-active-brightgreen?style=flat-square&logo=dependabot)](https://github.com/bmoneill/sreader/security/dependabot)
+<div align="center">
+    <h1><b>sreader</b></h1>
+    <h4>A TUI Atom and RSS Feed Reader</h4>
+    <a href="https://github.com/bmoneill/sreader/actions/workflows/go.yml">
+      <img src="https://github.com/bmoneill/sreader/actions/workflows/go.yml/badge.svg?branch=main" alt="CI Status" />
+    </a>
+    <a href="https://github.com/bmoneill/sreader/security/dependabot">
+      <img src="https://img.shields.io/badge/dependabot-active-brightgreen?style=flat-square&logo=dependabot" alt="Dependabot Active" />
+    </a>
+</div>
 
 ## Table of Contents
 
