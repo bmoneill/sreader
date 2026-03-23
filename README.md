@@ -69,7 +69,8 @@ an example.
 
 The example configuration file contains all the default values, besides the URL
 list. After installing, you can run sreader to generate a configuration file
-and then add your feed URLs. Colors must be in hex format.
+and then add your feed URLs. Colors must be in hex format. sreader will exit if
+URLs are not defined in your configuration file.
 
 sreader will also use `$BROWSER` and `$PLAYER` environment variables if not
 overridden by your configuration file.
