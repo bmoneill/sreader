@@ -1,6 +1,6 @@
 <div align="center">
     <h1><b>sreader</b></h1>
-    <h4>A TUI Atom and RSS Feed Reader</h4>
+    <h4>A TUI Atom and RSS Feed Reader for Linux</h4>
     <a href="https://github.com/bmoneill/sreader/actions/workflows/go.yml">
       <img src="https://github.com/bmoneill/sreader/actions/workflows/go.yml/badge.svg?branch=main" alt="CI Status" />
     </a>
